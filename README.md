@@ -285,6 +285,9 @@ erDiagram
 ```
 
 ---
+### 4. Diagrama Entidade-Relacionamento (DER Peter Chen)
+<img width="1536" height="1024" alt="ERD peter chen" src="https://github.com/user-attachments/assets/d5441af0-22ce-420a-8914-0430e9047c77" />
+
 
 ## Estrutura e Organização de Pacotes
 

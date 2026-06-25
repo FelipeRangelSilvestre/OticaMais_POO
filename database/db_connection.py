@@ -8,7 +8,7 @@ class DatabaseConnection:
         self.__host = "localhost"
         self.__database = "otica_mais"
         self.__user = "postgres"
-        self.__password = "sua_senha_aqui"  # Insira a senha que você usa no pgAdmin
+        self.__password = "POO2026"  # Insira a senha que você usa no pgAdmin
         self.__port = "5432"
         self.__conexao = None
 

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ótica Mais — Sistema de Gestão</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --azul:#185FA5;--azul-lt:#E6F1FB;--azul-md:#378ADD;--azul-dk:#0C447C;
+  --teal:#0F6E56;--teal-lt:#E1F5EE;--teal-md:#1D9E75;
+  --cinza-lt:#F1EFE8;--cinza-md:#888780;--cinza-dk:#444441;
+  --amber:#BA7517;--amber-lt:#FAEEDA;
+  --red:#A32D2D;--red-lt:#FCEBEB;
+  --green:#3B6D11;--green-lt:#EAF3DE;
+  --bg-primary:#ffffff;--bg-secondary:#f5f5f4;--bg-tertiary:#f0ede8;
+  --text-primary:#1a1a1a;--text-secondary:#6b6b68;--text-tertiary:#9b9b98;
+  --border:#e0ddd8;--border-md:#c8c5c0;
+  --radius-md:8px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg-primary:#1e1e1c;--bg-secondary:#2a2a28;--bg-tertiary:#141412;
+  --text-primary:#f0ede8;--text-secondary:#a0a09c;--text-tertiary:#6b6b68;
+  --border:#3a3a38;--border-md:#4a4a48;
+  --azul-lt:#0c2a40;--azul-dk:#85b7eb;
+  --teal-lt:#042a22;--teal:#5dcaa5;
+  --amber-lt:#2a1e08;--amber:#ef9f27;
+  --red-lt:#2a1212;--red:#f09595;
+  --green-lt:#172204;--green:#97c459;
+}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:var(--text-primary);background:var(--bg-tertiary);min-height:100vh}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:210px;flex-shrink:0;background:var(--bg-primary);border-right:0.5px solid var(--border);display:flex;flex-direction:column}
+.logo-area{padding:18px 16px 14px;border-bottom:0.5px solid var(--border)}
+.logo-main{font-size:17px;font-weight:600;color:var(--text-primary)}
+.logo-main i{color:var(--azul-md);margin-right:4px}
+.logo-sub{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.nav{flex:1;padding:8px 0}
+.nav-section{font-size:10px;font-weight:600;color:var(--text-tertiary);padding:12px 16px 4px;letter-spacing:.08em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:13.5px;color:var(--text-secondary);border-left:2.5px solid transparent;transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--bg-secondary);color:var(--text-primary)}
+.nav-item.active{background:var(--azul-lt);color:var(--azul-dk);border-left-color:var(--azul-md);font-weight:500}
+.nav-item i{font-size:17px}
+.sidebar-footer{padding:12px 16px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-tertiary)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--bg-primary);border-bottom:0.5px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:16px;font-weight:500}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;border-radius:var(--radius-md);cursor:pointer;border:0.5px solid var(--border-md);background:var(--bg-primary);color:var(--text-primary);transition:all .15s;font-family:inherit}
+.btn:hover{background:var(--bg-secondary)}
+.btn-primary{background:var(--azul-md);color:#fff;border-color:var(--azul-md)}
+.btn-primary:hover{background:var(--azul-dk);border-color:var(--azul-dk)}
+.content{flex:1;padding:20px;overflow-y:auto}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric{background:var(--bg-secondary);border-radius:var(--radius-md);padding:14px 16px}
+.metric-label{font-size:12px;color:var(--text-secondary);margin-bottom:6px}
+.metric-value{font-size:22px;font-weight:500}
+.metric-sub{font-size:11px;color:var(--text-tertiary);margin-top:3px}
+.card{background:var(--bg-primary);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.card-header{padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:500}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--text-secondary);border-bottom:0.5px solid var(--border);background:var(--bg-secondary);letter-spacing:.04em;text-transform:uppercase}
+td{padding:10px 16px;border-bottom:0.5px solid var(--border);color:var(--text-primary)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg-secondary)}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-green{background:var(--green-lt);color:var(--green)}
+.badge-amber{background:var(--amber-lt);color:var(--amber)}
+.badge-red{background:var(--red-lt);color:var(--red)}
+.badge-blue{background:var(--azul-lt);color:var(--azul-dk)}
+.badge-teal{background:var(--teal-lt);color:var(--teal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.page{display:none}
+.page.active{display:block}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:5px;font-weight:500}
+.form-input{width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);background:var(--bg-primary);color:var(--text-primary);font-family:inherit}
+.form-input:focus{outline:none;box-shadow:0 0 0 2px var(--azul-lt);border-color:var(--azul-md)}
+.form-select{width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);background:var(--bg-primary);color:var(--text-primary);font-family:inherit}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg-primary);border-radius:var(--radius-lg);width:500px;max-width:96vw;border:0.5px solid var(--border);max-height:90vh;overflow-y:auto}
+.modal-head{padding:16px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:15px;font-weight:500}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:0.5px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.estoque-bar{width:90px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.estoque-fill{height:100%;border-radius:3px}
+.search-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--bg-secondary);color:var(--text-secondary);border:0.5px solid var(--border)}
+.venda-item-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;background:var(--bg-secondary);padding:8px 12px;border-radius:var(--radius-md)}
+.venda-total{font-size:16px;font-weight:500;text-align:right;padding:12px 0;color:var(--text-primary)}
+.chat-msg{display:flex;gap:10px;align-items:flex-start}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-bubble{max-width:80%;padding:9px 13px;border-radius:var(--radius-lg);font-size:13px;line-height:1.6}
+.chat-bubble.user{background:var(--bg-secondary)}
+.chat-bubble.assistant{background:var(--azul-lt);color:var(--azul-dk)}
+.chat-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.avatar-user{background:var(--border);color:var(--text-secondary)}
+.avatar-ai{background:var(--azul-md);color:#fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-main"><i class="ti ti-eye"></i> Ótica Mais</div>
+      <div class="logo-sub">Sistema de Gestão</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="navTo('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+      <div class="nav-section">Cadastros</div>
+      <div class="nav-item" onclick="navTo('clientes',this)"><i class="ti ti-users"></i> Clientes</div>
+      <div class="nav-item" onclick="navTo('medicos',this)"><i class="ti ti-stethoscope"></i> Médicos</div>
+      <div class="nav-item" onclick="navTo('produtos',this)"><i class="ti ti-packages"></i> Produtos</div>
+      <div class="nav-item" onclick="navTo('vendedores',this)"><i class="ti ti-id-badge"></i> Vendedores</div>
+      <div class="nav-section">Operacional</div>
+      <div class="nav-item" onclick="navTo('receitas',this)"><i class="ti ti-file-text"></i> Receitas</div>
+      <div class="nav-item" onclick="navTo('vendas',this)"><i class="ti ti-shopping-cart"></i> Vendas</div>
+      <div class="nav-section">IA</div>
+      <div class="nav-item" onclick="navTo('assistente',this)"><i class="ti ti-sparkles"></i> Assistente IA</div>
+    </nav>
+    <div class="sidebar-footer">Oracle DB 21c · Demo v1.0</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="page-title">Dashboard</span>
+      <div class="topbar-actions">
+        <button class="btn" id="btn-nova-venda" onclick="abrirModalVenda()" style="display:none"><i class="ti ti-plus"></i> Nova venda</button>
+        <button class="btn" id="btn-novo-cliente" onclick="abrirModal('modal-cliente')" style="display:none"><i class="ti ti-plus"></i> Novo cliente</button>
+        <button class="btn" id="btn-novo-medico" onclick="abrirModal('modal-medico')" style="display:none"><i class="ti ti-plus"></i> Novo médico</button>
+        <button class="btn" id="btn-novo-produto" onclick="abrirModal('modal-produto')" style="display:none"><i class="ti ti-plus"></i> Novo produto</button>
+        <button class="btn" id="btn-nova-receita" onclick="abrirModal('modal-receita')" style="display:none"><i class="ti ti-plus"></i> Nova receita</button>
+        <span style="font-size:12px;color:var(--text-secondary)" id="data-hoje"></span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="metrics" id="metrics-area"></div>
+        <div class="grid2" style="margin-bottom:16px">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Vendas recentes</span><span style="font-size:12px;color:var(--text-secondary)" id="total-vendas-label"></span></div>
+            <table id="tbl-vendas-dash"></table>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Estoque crítico</span><span class="badge badge-red" id="badge-critico"></span></div>
+            <table id="tbl-estoque-critico"></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Produtos mais vendidos</span></div>
+          <div style="padding:16px" id="chart-produtos"></div>
+        </div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="page" id="page-clientes">
+        <div class="search-bar">
+          <input type="text" class="form-input" placeholder="Buscar por nome ou CPF..." id="search-cliente" oninput="renderClientes()" style="max-width:320px">
+          <span style="font-size:12px;color:var(--text-secondary)" id="count-clientes"></span>
+        </div>
+        <div class="card">
+          <table><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Receitas</th></tr></thead>
+          <tbody id="tbody-clientes"></tbody></table>
+        </div>
+      </div>
+
+      <!-- MÉDICOS -->
+      <div class="page" id="page-medicos">
+        <div class="card">
+          <table><thead><tr><th>CRM</th><th>Nome</th><th>Especialidade</th><th>Telefone</th><th>Receitas emitidas</th></tr></thead>
+          <tbody id="tbody-medicos"></tbody></table>
+        </div>
+      </div>
+
+      <!-- PRODUTOS -->
+      <div class="page" id="page-produtos">
+        <div class="search-bar">
+          <input type="text" class="form-input" placeholder="Buscar produto..." id="search-produto" oninput="renderProdutos()" style="max-width:280px">
+          <select class="form-select" id="filtro-tipo" onchange="renderProdutos()" style="max-width:150px">
+            <option value="">Todos os tipos</option>
+            <option value="ARMACAO">Armações</option>
+            <option value="LENTE">Lentes</option>
+          </select>
+        </div>
+        <div class="card">
+          <table><thead><tr><th>ID</th><th>Tipo</th><th>Descrição</th><th>Preço</th><th>Estoque</th><th>Status</th></tr></thead>
+          <tbody id="tbody-produtos"></tbody></table>
+        </div>
+      </div>
+
+      <!-- VENDEDORES -->
+      <div class="page" id="page-vendedores">
+        <div class="card">
+          <table><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Vendas realizadas</th><th>Total vendido</th></tr></thead>
+          <tbody id="tbody-vendedores"></tbody></table>
+        </div>
+      </div>
+
+      <!-- RECEITAS -->
+      <div class="page" id="page-receitas">
+        <div class="card">
+          <table><thead><tr><th>ID</th><th>Cliente</th><th>Médico</th><th>Emissão</th><th>Validade</th><th>OD Esf.</th><th>OE Esf.</th><th>Status</th></tr></thead>
+          <tbody id="tbody-receitas"></tbody></table>
+        </div>
+      </div>
+
+      <!-- VENDAS -->
+      <div class="page" id="page-vendas">
+        <div class="card">
+          <table><thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Vendedor</th><th>Itens</th><th>Total</th><th>Receita</th></tr></thead>
+          <tbody id="tbody-vendas"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ASSISTENTE IA -->
+      <div class="page" id="page-assistente">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title"><i class="ti ti-sparkles" style="color:var(--azul-md)"></i> Assistente de Análise — Ótica Mais</span>
+          </div>
+          <div style="padding:16px">
+            <div id="chat-msgs" style="min-height:220px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;margin-bottom:14px"></div>
+            <div style="display:flex;gap:8px">
+              <input type="text" class="form-input" id="chat-input" placeholder="Pergunte sobre vendas, estoque, clientes..." onkeydown="if(event.key==='Enter')enviarChat()" style="flex:1">
+              <button class="btn btn-primary" onclick="enviarChat()"><i class="ti ti-send"></i> Enviar</button>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" style="font-size:12px" onclick="perguntaRapida('Quais produtos estão com estoque crítico?')">Estoque crítico</button>
+              <button class="btn" style="font-size:12px" onclick="perguntaRapida('Qual o total de vendas do sistema?')">Total de vendas</button>
+              <button class="btn" style="font-size:12px" onclick="perguntaRapida('Quantos clientes estão cadastrados e quais são eles?')">Resumo clientes</button>
+              <button class="btn" style="font-size:12px" onclick="perguntaRapida('Quais receitas estão vencidas ou próximas do vencimento?')">Validade receitas</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- ===== MODAIS ===== -->
+<div class="modal-bg" id="modal-cliente">
+  <div class="modal">
+    <div class="modal-head"><h3>Novo cliente</h3><button class="btn" onclick="fecharModal('modal-cliente')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-input" id="cli-nome" placeholder="Ex: Maria Souza"></div>
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="form-group" style="margin:0"><label class="form-label">CPF (11 dígitos) *</label><input class="form-input" id="cli-cpf" placeholder="00000000000" maxlength="11"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Telefone</label><input class="form-input" id="cli-tel" placeholder="(92) 99999-9999"></div>
+      </div>
+      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="cli-email" placeholder="email@exemplo.com"></div>
+      <div class="form-group"><label class="form-label">Endereço</label><input class="form-input" id="cli-end" placeholder="Rua, número, bairro"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="fecharModal('modal-cliente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCliente()"><i class="ti ti-check"></i> Salvar cliente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-medico">
+  <div class="modal">
+    <div class="modal-head"><h3>Novo médico</h3><button class="btn" onclick="fecharModal('modal-medico')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="form-group" style="margin:0"><label class="form-label">CRM *</label><input class="form-input" id="med-crm" placeholder="AM-12345"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Especialidade</label><input class="form-input" id="med-esp" value="Oftalmologia"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Nome *</label><input class="form-input" id="med-nome" placeholder="Dr(a). ..."></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="med-tel" placeholder="(92) 99999-9999"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="fecharModal('modal-medico')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarMedico()"><i class="ti ti-check"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-produto">
+  <div class="modal">
+    <div class="modal-head"><h3>Novo produto</h3><button class="btn" onclick="fecharModal('modal-produto')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Tipo *</label>
+        <select class="form-select" id="prod-tipo" onchange="toggleProdTipo()">
+          <option value="ARMACAO">Armação</option>
+          <option value="LENTE">Lente</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Descrição *</label><input class="form-input" id="prod-desc" placeholder="Descrição do produto"></div>
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="form-group" style="margin:0"><label class="form-label">Preço de venda (R$) *</label><input class="form-input" id="prod-preco" type="number" step="0.01" placeholder="0,00"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Qtd. em estoque</label><input class="form-input" id="prod-estq" type="number" value="0"></div>
+      </div>
+      <div id="campos-armacao">
+        <div class="grid2" style="margin-bottom:14px">
+          <div class="form-group" style="margin:0"><label class="form-label">Marca *</label><input class="form-input" id="arm-marca" placeholder="Ex: Ray-Ban"></div>
+          <div class="form-group" style="margin:0"><label class="form-label">Modelo</label><input class="form-input" id="arm-modelo" placeholder="Ex: RB3025"></div>
+        </div>
+        <div class="grid2" style="margin-bottom:0">
+          <div class="form-group"><label class="form-label">Cor</label><input class="form-input" id="arm-cor" placeholder="Ex: Preto"></div>
+          <div class="form-group"><label class="form-label">Material</label><input class="form-input" id="arm-mat" placeholder="Ex: Acetato"></div>
+        </div>
+      </div>
+      <div id="campos-lente" style="display:none">
+        <div class="grid2" style="margin-bottom:14px">
+          <div class="form-group" style="margin:0"><label class="form-label">Material *</label><input class="form-input" id="len-mat" placeholder="Ex: Policarbonato"></div>
+          <div class="form-group" style="margin:0"><label class="form-label">Tipo de foco *</label>
+            <select class="form-select" id="len-foco">
+              <option>MONOFOCAL</option><option>BIFOCAL</option><option>PROGRESSIVA</option><option>OCUPACIONAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Índice de refração</label><input class="form-input" id="len-indice" type="number" step="0.01" placeholder="Ex: 1.67"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="fecharModal('modal-produto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProduto()"><i class="ti ti-check"></i> Salvar produto</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-receita">
+  <div class="modal">
+    <div class="modal-head"><h3>Nova receita</h3><button class="btn" onclick="fecharModal('modal-receita')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Cliente *</label><select class="form-select" id="rec-cliente"></select></div>
+      <div class="form-group"><label class="form-label">Médico *</label><select class="form-select" id="rec-medico"></select></div>
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="form-group" style="margin:0"><label class="form-label">Data de emissão *</label><input type="date" class="form-input" id="rec-emissao"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Validade *</label><input type="date" class="form-input" id="rec-validade"></div>
+      </div>
+      <p style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--border)">Olho direito (OD)</p>
+      <div class="grid3" style="margin-bottom:14px">
+        <div class="form-group" style="margin:0"><label class="form-label">Esférico *</label><input class="form-input" id="od-esf" type="number" step="0.25" placeholder="-2.00"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Cilíndrico</label><input class="form-input" id="od-cil" type="number" step="0.25" placeholder="0.00"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Eixo (0–180)</label><input class="form-input" id="od-eixo" type="number" min="0" max="180" placeholder="0"></div>
+      </div>
+      <p style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--border)">Olho esquerdo (OE)</p>
+      <div class="grid3">
+        <div class="form-group"><label class="form-label">Esférico *</label><input class="form-input" id="oe-esf" type="number" step="0.25" placeholder="-1.75"></div>
+        <div class="form-group"><label class="form-label">Cilíndrico</label><input class="form-input" id="oe-cil" type="number" step="0.25" placeholder="0.00"></div>
+        <div class="form-group"><label class="form-label">Eixo (0–180)</label><input class="form-input" id="oe-eixo" type="number" min="0" max="180" placeholder="0"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="fecharModal('modal-receita')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarReceita()"><i class="ti ti-check"></i> Salvar receita</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-venda">
+  <div class="modal" style="width:540px">
+    <div class="modal-head"><h3>Nova venda</h3><button class="btn" onclick="fecharModal('modal-venda')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Cliente *</label><select class="form-select" id="ven-cliente"></select></div>
+      <div class="form-group"><label class="form-label">Vendedor *</label><select class="form-select" id="ven-vendedor"></select></div>
+      <div class="form-group"><label class="form-label">Receita (opcional)</label>
+        <select class="form-select" id="ven-receita"><option value="">Sem receita</option></select>
+      </div>
+      <p style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px">Itens da venda</p>
+      <div id="venda-itens"></div>
+      <button class="btn" onclick="addItemVenda()" style="font-size:12px;margin-bottom:8px"><i class="ti ti-plus"></i> Adicionar item</button>
+      <div class="venda-total" id="venda-total">Total: R$ 0,00</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="fecharModal('modal-venda')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarVenda()"><i class="ti ti-check"></i> Finalizar venda</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// CONFIGURAÇÃO DA API
+// =====================================================
+// Endereço do backend Node.js + Express. Troque aqui se mudar a porta/host.
+const API_URL = 'http://localhost:3000/api';
+
+// =====================================================
+// BANCO DE DADOS EM MEMÓRIA (agora alimentado pela API,
+// não mais com dados fixos). Cada renderX() busca na API
+// antes de desenhar a tela.
+// =====================================================
+let DB = {
+  clientes: [],
+  medicos: [],
+  produtos: [],
+  vendedores: [],
+  receitas: [],
+  vendas: []
+};
+
+// Helper central de chamadas à API. Lança erro com mensagem amigável
+// (vinda do backend) quando a resposta não é 2xx.
+async function api(caminho, opcoes = {}) {
+  const resp = await fetch(API_URL + caminho, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opcoes
+  });
+  let corpo = null;
+  try { corpo = await resp.json(); } catch (e) { /* respostas 204 não têm corpo */ }
+  if (!resp.ok) {
+    throw new Error((corpo && corpo.erro) || `Erro ${resp.status} ao chamar ${caminho}`);
+  }
+  return corpo;
+}
+
+// ---- Funções de tradução: campo da API -> campo que o front já usa ----
+// O backend usa nomes de coluna do banco (preco_venda, qtd_estoque, data_venda...).
+// Estas funções convertem para os nomes que o restante do código já espera
+// (preco, estoque, data...), assim a lógica de renderização não muda.
+function adaptarProduto(p) {
+  const extra = p.tipo === 'ARMACAO'
+    ? { marca:p.marca, modelo:p.modelo, cor:p.cor, material:p.material_armacao }
+    : { material:p.material_lente, foco:p.tipo_foco, indice:p.indice };
+  return {
+    id: p.id_produto, tipo: p.tipo, descricao: p.descricao,
+    preco: Number(p.preco_venda), estoque: p.qtd_estoque, minimo: p.qtd_minima,
+    extra
+  };
+}
+function adaptarReceita(r) {
+  return {
+    id: r.id_receita, id_cliente: r.id_cliente, crm: r.crm_medico,
+    emissao: r.data_emissao.split('T')[0], validade: r.validade.split('T')[0],
+    od_esf: Number(r.od_esferico), od_cil: Number(r.od_cilindrico), od_eixo: r.od_eixo,
+    oe_esf: Number(r.oe_esferico), oe_cil: Number(r.oe_cilindrico), oe_eixo: r.oe_eixo
+  };
+}
+function adaptarVenda(v) {
+  return {
+    id: v.id_venda, data: v.data_venda.split('T')[0],
+    id_cliente: v.id_cliente, id_vendedor: v.id_vendedor, id_receita: v.id_receita,
+    valor_total: Number(v.valor_total),
+    itens: (v.itens || []).map(i => ({ id_produto:i.id_produto, qtd:i.quantidade, valor:Number(i.valor_unitario) }))
+  };
+}
+
+// =====================================================
+// UTILITÁRIOS
+// =====================================================
+// totalVenda agora prioriza valor_total vindo do banco (calculado pela
+// trigger no PostgreSQL); só soma os itens manualmente como fallback.
+const totalVenda = v => v.valor_total !== undefined ? v.valor_total : v.itens.reduce((s,i) => s + i.qtd * i.valor, 0);
+const fmtMoney = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const fmtData = d => d.split('-').reverse().join('/');
+const nomeProd = id => { const p = DB.produtos.find(x => x.id === id); return p ? p.descricao : '—'; };
+const nomeCliente = id => { const c = DB.clientes.find(x => x.id === id); return c ? c.nome : '—'; };
+const nomeMedico = crm => { const m = DB.medicos.find(x => x.crm === crm); return m ? m.nome : '—'; };
+const nomeVendedor = id => { const v = DB.vendedores.find(x => x.id === id); return v ? v.nome : '—'; };
+
+// Data atual
+document.getElementById('data-hoje').textContent = new Date().toLocaleDateString('pt-BR');
+
+// =====================================================
+// NAVEGAÇÃO
+// =====================================================
+function navTo(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  const titles = {
+    dashboard:'Dashboard', clientes:'Clientes', medicos:'Médicos', produtos:'Produtos',
+    vendedores:'Vendedores', receitas:'Receitas', vendas:'Vendas', assistente:'Assistente IA'
+  };
+  document.getElementById('page-title').textContent = titles[page];
+  ['btn-nova-venda','btn-novo-cliente','btn-novo-medico','btn-novo-produto','btn-nova-receita']
+    .forEach(b => document.getElementById(b).style.display = 'none');
+  const btnMap = {vendas:'btn-nova-venda', clientes:'btn-novo-cliente', medicos:'btn-novo-medico', produtos:'btn-novo-produto', receitas:'btn-nova-receita'};
+  if (btnMap[page]) document.getElementById(btnMap[page]).style.display = '';
+  const renders = {
+    clientes:renderClientes, medicos:renderMedicos, produtos:renderProdutos,
+    vendedores:renderVendedores, receitas:renderReceitas, vendas:renderVendas, dashboard:renderDashboard
+  };
+  if (renders[page]) renders[page]();
+}
+
+// =====================================================
+// MODAIS
+// =====================================================
+async function abrirModal(id) {
+  if (id === 'modal-receita') {
+    DB.clientes = (await api('/clientes')).map(c => ({ id:c.id_cliente, nome:c.nome, cpf:c.cpf, telefone:c.telefone, email:c.email, endereco:c.endereco }));
+    DB.medicos = (await api('/medicos')).map(m => ({ crm:m.crm, nome:m.nome, especialidade:m.especialidade, telefone:m.telefone }));
+    document.getElementById('rec-cliente').innerHTML = DB.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+    document.getElementById('rec-medico').innerHTML = DB.medicos.map(m => `<option value="${m.crm}">${m.nome}</option>`).join('');
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('rec-emissao').value = today;
+    const v = new Date(); v.setFullYear(v.getFullYear() + 1);
+    document.getElementById('rec-validade').value = v.toISOString().split('T')[0];
+  }
+  document.getElementById(id).classList.add('open');
+}
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function abrirModalVenda() {
+  const [clientesApi, vendedoresApi, receitasApi, produtosApi] = await Promise.all([
+    api('/clientes'), api('/vendedores'), api('/receitas'), api('/produtos')
+  ]);
+  DB.clientes = clientesApi.map(c => ({ id:c.id_cliente, nome:c.nome, cpf:c.cpf }));
+  DB.vendedores = vendedoresApi.map(v => ({ id:v.id_vendedor, nome:v.nome }));
+  DB.receitas = receitasApi.map(adaptarReceita);
+  DB.produtos = produtosApi.map(adaptarProduto);
+
+  document.getElementById('ven-cliente').innerHTML = DB.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  document.getElementById('ven-vendedor').innerHTML = DB.vendedores.map(v => `<option value="${v.id}">${v.nome}</option>`).join('');
+  document.getElementById('ven-receita').innerHTML = '<option value="">Sem receita</option>' +
+    DB.receitas.map(r => `<option value="${r.id}">Receita #${r.id} — ${nomeCliente(r.id_cliente)}</option>`).join('');
+  document.getElementById('venda-itens').innerHTML = '';
+  addItemVenda();
+  calcTotal();
+  document.getElementById('modal-venda').classList.add('open');
+}
+
+// =====================================================
+// VENDA — ITENS
+// =====================================================
+function addItemVenda() {
+  const div = document.createElement('div');
+  div.className = 'venda-item-row';
+  div.innerHTML = `
+    <select class="form-select" style="flex:2;font-size:12px">${DB.produtos.map(p =>
+      `<option value="${p.id}" data-preco="${p.preco}">[${p.tipo==='ARMACAO'?'ARM':'LEN'}] ${p.descricao.substring(0,40)}</option>`
+    ).join('')}</select>
+    <input type="number" min="1" value="1" class="form-input" style="width:60px;flex:none">
+    <input type="number" class="form-input" style="width:110px;flex:none" placeholder="Valor">
+    <button class="btn" style="flex:none;padding:6px 8px" onclick="this.parentElement.remove();calcTotal()"><i class="ti ti-trash" style="font-size:14px"></i></button>`;
+  const sel = div.querySelector('select');
+  const valInput = div.querySelectorAll('input')[1];
+  const qtyInput = div.querySelectorAll('input')[0];
+  const setPreco = () => { valInput.value = parseFloat(sel.selectedOptions[0].dataset.preco).toFixed(2); calcTotal(); };
+  sel.onchange = setPreco;
+  qtyInput.oninput = calcTotal;
+  valInput.oninput = calcTotal;
+  setPreco();
+  document.getElementById('venda-itens').appendChild(div);
+}
+
+function calcTotal() {
+  let total = 0;
+  document.querySelectorAll('#venda-itens .venda-item-row').forEach(row => {
+    const qtd = parseInt(row.querySelectorAll('input')[0].value) || 0;
+    const val = parseFloat(row.querySelectorAll('input')[1].value) || 0;
+    total += qtd * val;
+  });
+  document.getElementById('venda-total').textContent = 'Total: ' + fmtMoney(total);
+}
+
+// =====================================================
+// SALVAR — CRUD
+// =====================================================
+async function salvarCliente() {
+  const nome = document.getElementById('cli-nome').value.trim();
+  const cpf = document.getElementById('cli-cpf').value.trim();
+  if (!nome || cpf.length !== 11 || !/^\d{11}$/.test(cpf)) { alert('Preencha nome e CPF válido (11 dígitos numéricos).'); return; }
+  try {
+    await api('/clientes', { method:'POST', body: JSON.stringify({
+      nome, cpf,
+      telefone: document.getElementById('cli-tel').value,
+      email: document.getElementById('cli-email').value,
+      endereco: document.getElementById('cli-end').value
+    })});
+    fecharModal('modal-cliente'); renderClientes(); renderDashboard();
+  } catch (e) { alert(e.message); }
+}
+
+async function salvarMedico() {
+  const crm = document.getElementById('med-crm').value.trim();
+  const nome = document.getElementById('med-nome').value.trim();
+  if (!crm || !nome) { alert('CRM e nome são obrigatórios.'); return; }
+  try {
+    await api('/medicos', { method:'POST', body: JSON.stringify({
+      crm, nome,
+      especialidade: document.getElementById('med-esp').value,
+      telefone: document.getElementById('med-tel').value
+    })});
+    fecharModal('modal-medico'); renderMedicos();
+  } catch (e) { alert(e.message); }
+}
+
+async function salvarProduto() {
+  const tipo = document.getElementById('prod-tipo').value;
+  const preco_venda = parseFloat(document.getElementById('prod-preco').value);
+  const qtd_estoque = parseInt(document.getElementById('prod-estq').value) || 0;
+  const descricao = document.getElementById('prod-desc').value.trim();
+  if (!descricao || !preco_venda || preco_venda < 0) { alert('Preencha descrição e preço válido.'); return; }
+  let extra = {};
+  if (tipo === 'ARMACAO') {
+    if (!document.getElementById('arm-marca').value.trim()) { alert('Marca é obrigatória para armações.'); return; }
+    extra = { marca:document.getElementById('arm-marca').value, modelo:document.getElementById('arm-modelo').value, cor:document.getElementById('arm-cor').value, material:document.getElementById('arm-mat').value };
+  } else {
+    if (!document.getElementById('len-mat').value.trim()) { alert('Material é obrigatório para lentes.'); return; }
+    extra = { material:document.getElementById('len-mat').value, tipo_foco:document.getElementById('len-foco').value, indice:parseFloat(document.getElementById('len-indice').value) };
+  }
+  try {
+    await api('/produtos', { method:'POST', body: JSON.stringify({ tipo, descricao, preco_venda, qtd_estoque, qtd_minima:5, ...extra }) });
+    fecharModal('modal-produto'); renderProdutos(); renderDashboard();
+  } catch (e) { alert(e.message); }
+}
+
+async function salvarReceita() {
+  const id_cliente = parseInt(document.getElementById('rec-cliente').value);
+  const crm_medico = document.getElementById('rec-medico').value;
+  const data_emissao = document.getElementById('rec-emissao').value;
+  const validade = document.getElementById('rec-validade').value;
+  const od_esferico = parseFloat(document.getElementById('od-esf').value);
+  const oe_esferico = parseFloat(document.getElementById('oe-esf').value);
+  if (!data_emissao || !validade || isNaN(od_esferico) || isNaN(oe_esferico)) { alert('Preencha todos os campos obrigatórios (*).' ); return; }
+  if (validade <= data_emissao) { alert('A validade deve ser posterior à data de emissão.'); return; }
+  const od_eixo = parseInt(document.getElementById('od-eixo').value) || 0;
+  const oe_eixo = parseInt(document.getElementById('oe-eixo').value) || 0;
+  if (od_eixo < 0 || od_eixo > 180 || oe_eixo < 0 || oe_eixo > 180) { alert('Eixo deve estar entre 0 e 180.'); return; }
+  try {
+    await api('/receitas', { method:'POST', body: JSON.stringify({
+      id_cliente, crm_medico, data_emissao, validade, od_esferico, oe_esferico, od_eixo, oe_eixo,
+      od_cilindrico: parseFloat(document.getElementById('od-cil').value) || 0,
+      oe_cilindrico: parseFloat(document.getElementById('oe-cil').value) || 0
+    })});
+    fecharModal('modal-receita'); renderReceitas();
+  } catch (e) { alert(e.message); }
+}
+
+async function salvarVenda() {
+  const rows = document.querySelectorAll('#venda-itens .venda-item-row');
+  if (!rows.length) { alert('Adicione ao menos um item à venda.'); return; }
+  const itens = [];
+  rows.forEach(row => {
+    const id_produto = parseInt(row.querySelector('select').value);
+    const quantidade = parseInt(row.querySelectorAll('input')[0].value) || 1;
+    const valor_unitario = parseFloat(row.querySelectorAll('input')[1].value) || 0;
+    itens.push({ id_produto, quantidade, valor_unitario });
+  });
+  const id_receita = document.getElementById('ven-receita').value || null;
+  try {
+    // O backend cria a venda, insere os itens e a trigger do PostgreSQL
+    // desconta o estoque e calcula o total — nada disso é feito aqui no front.
+    await api('/vendas', { method:'POST', body: JSON.stringify({
+      id_cliente: parseInt(document.getElementById('ven-cliente').value),
+      id_vendedor: parseInt(document.getElementById('ven-vendedor').value),
+      id_receita: id_receita ? parseInt(id_receita) : null,
+      itens
+    })});
+    fecharModal('modal-venda'); renderVendas(); renderDashboard();
+    alert('Venda registrada com sucesso!');
+  } catch (e) {
+    // Ex: "Estoque insuficiente para o produto 2 (disponível: 3, solicitado: 5)."
+    alert(e.message);
+  }
+}
+
+function toggleProdTipo() {
+  const t = document.getElementById('prod-tipo').value;
+  document.getElementById('campos-armacao').style.display = t === 'ARMACAO' ? '' : 'none';
+  document.getElementById('campos-lente').style.display = t === 'LENTE' ? '' : 'none';
+}
+
+// =====================================================
+// RENDERIZAÇÕES
+// =====================================================
+async function renderDashboard() {
+  let d;
+  try { d = await api('/dashboard'); }
+  catch (e) { console.error(e); return; }
+
+  document.getElementById('metrics-area').innerHTML = `
+    <div class="metric"><div class="metric-label">Total de clientes</div><div class="metric-value">${d.total_clientes}</div><div class="metric-sub">cadastrados</div></div>
+    <div class="metric"><div class="metric-label">Vendas realizadas</div><div class="metric-value">${d.total_vendas}</div><div class="metric-sub">no sistema</div></div>
+    <div class="metric"><div class="metric-label">Receita total</div><div class="metric-value" style="font-size:18px">${fmtMoney(Number(d.receita_total))}</div><div class="metric-sub">em vendas</div></div>
+    <div class="metric"><div class="metric-label">Estoque crítico</div><div class="metric-value" style="color:var(--red)">${d.estoque_critico_qtd}</div><div class="metric-sub">produto(s) abaixo do mínimo</div></div>`;
+
+  document.getElementById('total-vendas-label').textContent = d.total_vendas + ' vendas';
+  document.getElementById('tbl-vendas-dash').innerHTML = `
+    <thead><tr><th>Data</th><th>Cliente</th><th>Total</th></tr></thead>
+    <tbody>${d.vendas_recentes.map(v => `<tr><td>${fmtData(v.data_venda.split('T')[0])}</td><td>${v.nome_cliente}</td><td style="font-weight:500">${fmtMoney(Number(v.valor_total))}</td></tr>`).join('')}</tbody>`;
+
+  document.getElementById('badge-critico').textContent = d.estoque_critico.length + ' produto(s)';
+  document.getElementById('tbl-estoque-critico').innerHTML = `
+    <thead><tr><th>Produto</th><th>Estoque</th><th>Mín.</th></tr></thead>
+    <tbody>${d.estoque_critico.length ? d.estoque_critico.map(p => `<tr>
+      <td style="font-size:12px">${p.descricao.substring(0,30)}…</td>
+      <td><span class="badge badge-red">${p.qtd_estoque}</span></td>
+      <td style="color:var(--text-secondary)">${p.qtd_minima}</td></tr>`).join('') :
+      '<tr><td colspan="3" style="text-align:center;color:var(--text-secondary);padding:20px">Nenhum produto crítico</td></tr>'}</tbody>`;
+
+  const maxV2 = d.produtos_mais_vendidos[0] ? d.produtos_mais_vendidos[0].qtd_vendida : 1;
+  document.getElementById('chart-produtos').innerHTML = d.produtos_mais_vendidos.map(p => {
+    const pct = Math.round(p.qtd_vendida / maxV2 * 100);
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="font-size:12px;width:170px;flex-shrink:0;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.descricao.substring(0,26)}…</span>
+      <div style="flex:1;height:8px;background:var(--border);border-radius:4px"><div style="width:${pct}%;height:100%;background:var(--azul-md);border-radius:4px"></div></div>
+      <span style="font-size:12px;font-weight:500;min-width:20px;text-align:right">${p.qtd_vendida}</span></div>`;
+  }).join('') || '<p style="color:var(--text-secondary);font-size:13px">Sem dados de venda.</p>';
+}
+
+async function renderClientes() {
+  const q = document.getElementById('search-cliente')?.value || '';
+  let clientes;
+  try { clientes = await api('/clientes?busca=' + encodeURIComponent(q)); }
+  catch (e) { console.error(e); return; }
+  DB.clientes = clientes.map(c => ({ id:c.id_cliente, nome:c.nome, cpf:c.cpf, telefone:c.telefone, email:c.email, endereco:c.endereco }));
+
+  document.getElementById('count-clientes').textContent = clientes.length + ' cliente(s)';
+  document.getElementById('tbody-clientes').innerHTML = clientes.map(c => {
+    return `<tr>
+      <td style="font-weight:500">${c.nome}</td>
+      <td style="font-family:monospace;font-size:12px">${c.cpf}</td>
+      <td>${c.telefone||'—'}</td>
+      <td style="color:var(--azul-dk);font-size:12px">${c.email||'—'}</td>
+      <td><span class="badge badge-blue">${c.receitas_count} receita(s)</span></td></tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:20px">Nenhum cliente encontrado</td></tr>';
+}
+
+async function renderMedicos() {
+  let medicos;
+  try { medicos = await api('/medicos'); }
+  catch (e) { console.error(e); return; }
+  DB.medicos = medicos.map(m => ({ crm:m.crm, nome:m.nome, especialidade:m.especialidade, telefone:m.telefone }));
+
+  document.getElementById('tbody-medicos').innerHTML = medicos.map(m => {
+    return `<tr>
+      <td><span class="tag">${m.crm}</span></td>
+      <td style="font-weight:500">${m.nome}</td>
+      <td>${m.especialidade}</td>
+      <td>${m.telefone||'—'}</td>
+      <td>${m.receitas_emitidas}</td></tr>`;
+  }).join('');
+}
+
+async function renderProdutos() {
+  const busca = document.getElementById('search-produto')?.value || '';
+  const tipo = document.getElementById('filtro-tipo')?.value || '';
+  const params = new URLSearchParams();
+  if (busca) params.set('busca', busca);
+  if (tipo) params.set('tipo', tipo);
+
+  let produtosApi;
+  try { produtosApi = await api('/produtos' + (params.toString() ? '?' + params.toString() : '')); }
+  catch (e) { console.error(e); return; }
+
+  const lista = produtosApi.map(adaptarProduto);
+  DB.produtos = lista;
+
+  const badge = p => p.estoque <= 0 ? '<span class="badge badge-red">Esgotado</span>' :
+                     p.estoque <= p.minimo ? '<span class="badge badge-amber">Crítico</span>' :
+                     '<span class="badge badge-green">OK</span>';
+  const bar = p => {
+    const pct = Math.min(100, Math.round(p.estoque / Math.max(p.minimo * 2, 1) * 100));
+    const cor = p.estoque <= p.minimo ? '#E24B4A' : p.estoque <= p.minimo * 1.5 ? '#EF9F27' : '#1D9E75';
+    return `<div class="estoque-bar"><div class="estoque-fill" style="width:${pct}%;background:${cor}"></div></div> <span style="font-size:12px">${p.estoque}</span>`;
+  };
+  document.getElementById('tbody-produtos').innerHTML = lista.map(p => `<tr>
+    <td style="font-size:12px;color:var(--text-secondary)">#${p.id}</td>
+    <td><span class="badge ${p.tipo==='ARMACAO'?'badge-teal':'badge-blue'}">${p.tipo==='ARMACAO'?'Armação':'Lente'}</span></td>
+    <td style="font-size:13px">${p.descricao}</td>
+    <td style="font-weight:500">${fmtMoney(p.preco)}</td>
+    <td>${bar(p)}</td>
+    <td>${badge(p)}</td></tr>`).join('');
+}
+
+async function renderVendedores() {
+  let vendedores;
+  try { vendedores = await api('/vendedores'); }
+  catch (e) { console.error(e); return; }
+  DB.vendedores = vendedores.map(v => ({ id:v.id_vendedor, nome:v.nome }));
+
+  document.getElementById('tbody-vendedores').innerHTML = vendedores.map(v => {
+    return `<tr>
+      <td style="font-weight:500">${v.nome}</td>
+      <td style="font-family:monospace;font-size:12px">${v.cpf}</td>
+      <td>${v.telefone||'—'}</td>
+      <td>${v.vendas_realizadas}</td>
+      <td style="font-weight:500;color:var(--teal)">${fmtMoney(Number(v.total_vendido))}</td></tr>`;
+  }).join('');
+}
+
+async function renderReceitas() {
+  let receitasApi;
+  try { receitasApi = await api('/receitas'); }
+  catch (e) { console.error(e); return; }
+  DB.receitas = receitasApi.map(adaptarReceita);
+
+  // o backend já calcula o status (VENCIDA / VENCE_EM_BREVE / VALIDA) — usamos direto
+  const badgeStatus = { VENCIDA:'<span class="badge badge-red">Vencida</span>', VENCE_EM_BREVE:'<span class="badge badge-amber">Vence em breve</span>', VALIDA:'<span class="badge badge-green">Válida</span>' };
+
+  document.getElementById('tbody-receitas').innerHTML = receitasApi.map(r => {
+    return `<tr>
+      <td><span class="tag">#${r.id_receita}</span></td>
+      <td>${r.nome_cliente}</td>
+      <td style="font-size:12px">${r.nome_medico}</td>
+      <td>${fmtData(r.data_emissao.split('T')[0])}</td>
+      <td>${fmtData(r.validade.split('T')[0])}</td>
+      <td>${r.od_esferico > 0 ? '+' : ''}${Number(r.od_esferico).toFixed(2)}</td>
+      <td>${r.oe_esferico > 0 ? '+' : ''}${Number(r.oe_esferico).toFixed(2)}</td>
+      <td>${badgeStatus[r.status]}</td></tr>`;
+  }).join('');
+}
+
+async function renderVendas() {
+  let vendasApi;
+  try { vendasApi = await api('/vendas'); }
+  catch (e) { console.error(e); return; }
+  DB.vendas = vendasApi.map(adaptarVenda);
+
+  document.getElementById('tbody-vendas').innerHTML = vendasApi.map(v => `<tr>
+      <td><span class="tag">#${v.id_venda}</span></td>
+      <td>${fmtData(v.data_venda.split('T')[0])}</td>
+      <td>${v.nome_cliente}</td>
+      <td style="font-size:12px">${v.nome_vendedor}</td>
+      <td style="text-align:center">${v.qtd_itens}</td>
+      <td style="font-weight:500">${fmtMoney(Number(v.valor_total))}</td>
+      <td>${v.id_receita ? `<span class="badge badge-blue">#${v.id_receita}</span>` : '<span style="color:var(--text-tertiary);font-size:12px">—</span>'}</td></tr>`
+    ).join('');
+}
+
+// =====================================================
+// ASSISTENTE IA
+// =====================================================
+// A chave da Anthropic NÃO fica mais aqui no front. O navegador chama
+// o nosso backend (/api/assistente/chat), que guarda a chave em segredo
+// e monta o contexto direto a partir do banco PostgreSQL.
+let chatHistory = [];
+
+async function enviarChat() {
+  const inp = document.getElementById('chat-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  addMsg('user', msg);
+  chatHistory.push({ role:'user', content:msg });
+  const loadId = 'load-' + Date.now();
+  addMsg('assistant', '<i class="ti ti-loader-2 spin"></i> Analisando...', loadId);
+
+  try {
+    const data = await api('/assistente/chat', { method:'POST', body: JSON.stringify({
+      mensagens: chatHistory.slice(-10)
+    })});
+    document.getElementById(loadId).innerHTML = data.resposta.replace(/\n/g, '<br>');
+    chatHistory.push({ role:'assistant', content:data.resposta });
+  } catch(e) {
+    document.getElementById(loadId).innerHTML = 'Erro ao conectar com o assistente: ' + e.message;
+  }
+}
+
+function perguntaRapida(txt) {
+  document.getElementById('chat-input').value = txt;
+  enviarChat();
+}
+
+function addMsg(role, html, id) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  if (id) div.id = id;
+  const avatar = role === 'user'
+    ? `<div class="chat-avatar avatar-user"><i class="ti ti-user"></i></div>`
+    : `<div class="chat-avatar avatar-ai"><i class="ti ti-sparkles"></i></div>`;
+  const bubble = `<div class="chat-bubble ${role}">${html}</div>`;
+  div.innerHTML = avatar + bubble;
+  const container = document.getElementById('chat-msgs');
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// =====================================================
+// INICIALIZAÇÃO
+// =====================================================
+renderDashboard().catch(() => {
+  document.getElementById('metrics-area').innerHTML =
+    `<div style="padding:16px;color:var(--red)">Não foi possível conectar à API em ${API_URL}.
+     Confira se o backend está rodando (npm start) e se o endereço em API_URL está correto.</div>`;
+});
+</script>
+</body>
+</html>

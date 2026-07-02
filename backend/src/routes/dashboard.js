@@ -12,8 +12,10 @@ router.get('/', async (req, res) => {
       pool.query('SELECT COALESCE(SUM(valor_total),0) AS total FROM VENDA'),
       pool.query('SELECT COUNT(*)::int AS total FROM PRODUTO WHERE qtd_estoque <= qtd_minima'),
       pool.query(`
-        SELECT v.id_venda, v.data_venda, v.valor_total, c.nome AS nome_cliente
-          FROM VENDA v JOIN CLIENTE c ON c.id_cliente = v.id_cliente
+        SELECT v.id_venda, v.data_venda, v.valor_total, p.nome AS nome_cliente
+          FROM VENDA v 
+          JOIN CLIENTE c ON c.id_pessoa = v.id_pessoa
+          JOIN PESSOA p ON p.id_pessoa = c.id_pessoa
          ORDER BY v.data_venda DESC, v.id_venda DESC LIMIT 5`),
       pool.query(`
         SELECT id_produto, descricao, qtd_estoque, qtd_minima

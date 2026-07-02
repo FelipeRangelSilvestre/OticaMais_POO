@@ -1,6 +1,4 @@
 // src/routes/assistente.js
-// Proxy seguro para a API da Anthropic: a chave fica só aqui no servidor,
-// nunca é enviada ao navegador (resolve o problema de segurança do front original).
 const express = require('express');
 const pool = require('../db/pool');
 
@@ -8,18 +6,26 @@ const router = express.Router();
 
 async function montarContexto() {
   const [clientes, produtos, vendas, receitas, vendedores] = await Promise.all([
-    pool.query('SELECT nome FROM CLIENTE ORDER BY nome'),
+    pool.query('SELECT p.nome FROM CLIENTE c JOIN PESSOA p ON c.id_pessoa = p.id_pessoa ORDER BY p.nome'),
     pool.query('SELECT descricao, tipo, preco_venda, qtd_estoque, qtd_minima FROM PRODUTO ORDER BY id_produto'),
     pool.query(`
-      SELECT v.id_venda, v.data_venda, v.valor_total, c.nome AS cliente, ve.nome AS vendedor,
+      SELECT v.id_venda, v.data_venda, v.valor_total, pc.nome AS cliente, pv.nome AS vendedor,
              (SELECT COUNT(*) FROM ITEM_VENDA iv WHERE iv.id_venda = v.id_venda)::int AS qtd_itens
-        FROM VENDA v JOIN CLIENTE c ON c.id_cliente = v.id_cliente JOIN VENDEDOR ve ON ve.id_vendedor = v.id_vendedor
+        FROM VENDA v 
+        JOIN CLIENTE c ON c.id_pessoa = v.id_pessoa 
+        JOIN PESSOA pc ON pc.id_pessoa = c.id_pessoa
+        JOIN VENDEDOR ve ON ve.id_pessoa = v.id_vendedor
+        JOIN PESSOA pv ON pv.id_pessoa = ve.id_pessoa
        ORDER BY v.id_venda`),
     pool.query(`
-      SELECT r.id_receita, c.nome AS cliente, m.nome AS medico, r.validade, r.od_esferico, r.oe_esferico
-        FROM RECEITA r JOIN CLIENTE c ON c.id_cliente = r.id_cliente JOIN MEDICO m ON m.crm = r.crm_medico
+      SELECT r.id_receita, pc.nome AS cliente, pm.nome AS medico, r.validade, r.od_esferico, r.oe_esferico
+        FROM RECEITA r 
+        JOIN CLIENTE c ON c.id_pessoa = r.id_pessoa 
+        JOIN PESSOA pc ON pc.id_pessoa = c.id_pessoa
+        JOIN MEDICO m ON m.id_pessoa = r.id_medico 
+        JOIN PESSOA pm ON pm.id_pessoa = m.id_pessoa
        ORDER BY r.id_receita`),
-    pool.query('SELECT nome FROM VENDEDOR ORDER BY nome'),
+    pool.query('SELECT p.nome FROM VENDEDOR v JOIN PESSOA p ON v.id_pessoa = p.id_pessoa ORDER BY p.nome'),
   ]);
 
   return `Você é o assistente de análise do sistema Ótica Mais, uma ótica em Itacoatiara-AM.
@@ -38,7 +44,6 @@ VENDEDORES: ${vendedores.rows.map((v) => v.nome).join(', ')}`;
 }
 
 // POST /api/assistente/chat
-// Body: { mensagens: [{ role: "user"|"assistant", content: "..." }] }
 router.post('/chat', async (req, res) => {
   const { mensagens } = req.body;
 
